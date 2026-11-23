@@ -1,0 +1,89 @@
+.solar-assembly {
+  --assembly-ui-scale: 1;
+  position: relative;
+  display: block;
+  min-height: 100vh;
+  background: #000;
+  color: #f7f7f7;
+}
+
+.solar-assembly[data-animate] { height: 340vh; }
+
+.solar-assembly__stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  margin: 0;
+  overflow: clip;
+  isolation: isolate;
+}
+
+.solar-assembly__visual {
+  position: relative;
+  width: min(94%, 1320px, 145vh);
+  aspect-ratio: 3 / 2;
+  transform: translateY(var(--assembly-camera, 0));
+}
+
+.solar-assembly__visual::before {
+  position: absolute;
+  inset: 15% 4% 8%;
+  z-index: -1;
+  background: radial-gradient(ellipse, #111b22, transparent 68%);
+  content: "";
+}
+
+.solar-assembly__layer {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: var(--layer-opacity, 1);
+  transform: translate3d(var(--layer-x, 0), var(--layer-y, 0), 0);
+  user-select: none;
+  pointer-events: none;
+}
+
+.solar-assembly__caption {
+  position: absolute;
+  inset: auto 0 max(22px, 8vh);
+  display: grid;
+  justify-items: center;
+  gap: calc(11px * var(--assembly-ui-scale));
+  text-align: center;
+  font-size: calc(15px * var(--assembly-ui-scale));
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.solar-assembly__track {
+  display: none;
+  width: calc(108px * var(--assembly-ui-scale));
+  height: calc(2px * var(--assembly-ui-scale));
+  overflow: hidden;
+  border-radius: 100px;
+  background: #ffffff29;
+}
+
+.solar-assembly[data-animate] .solar-assembly__track { display: block; }
+
+.solar-assembly__track::after {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #baf983;
+  transform: scaleX(var(--assembly-progress, 0));
+  transform-origin: left;
+  content: "";
+}
+
+.solar-assembly[data-compact] .solar-assembly__caption { bottom: 19vh; }
+
+@media (max-height: 560px) {
+  .solar-assembly__caption { bottom: 4vh; }
+  .solar-assembly__visual { width: min(94%, 122vh); }
+}

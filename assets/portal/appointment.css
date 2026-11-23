@@ -1,0 +1,200 @@
+.aptech-contact-dialog {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  margin: auto;
+  width: min(32rem, calc(var(--contact-width, 100vw) - 24px));
+  max-width: none;
+  max-height: calc(var(--contact-height, 100dvh) - 24px);
+  padding: clamp(1rem, 5vw, 1.8rem);
+  border: 1px solid #464a45;
+  border-radius: 1.25rem;
+  background: #141615;
+  color: #fff;
+  color-scheme: dark;
+  box-shadow: 0 24px 80px #000a;
+  font-size: 16px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  zoom: var(--contact-zoom, 1);
+}
+
+.aptech-contact-dialog::backdrop { background: #000b; }
+.aptech-contact-dialog[open] { animation: aptech-contact-enter .28s ease-out; }
+
+@keyframes aptech-contact-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.aptech-contact-dialog__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.aptech-contact-dialog__header h2 {
+  margin: 0;
+  font-size: 1.5em;
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+
+.aptech-contact-dialog__close {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin: -.5rem -.5rem 0 0;
+  border: 1px solid #414141;
+  border-radius: 50%;
+  background: #222;
+  color: #fff;
+  font-size: 1.4em;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.aptech-contact-dialog__intro,
+.aptech-contact-dialog__note {
+  color: #c9ccc8;
+  font-size: .875em;
+  line-height: 1.4;
+}
+
+.aptech-contact-dialog__intro { margin: .35rem 0 1rem; }
+
+.aptech-contact-dialog__fields {
+  display: grid;
+  gap: .75rem;
+}
+
+.aptech-contact-dialog label {
+  display: grid;
+  gap: .25rem;
+  font-size: .875em;
+  font-weight: 550;
+}
+
+.aptech-contact-dialog :is(input, textarea) {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: .6em .7em;
+  border: 1px solid #4b5149;
+  border-radius: .55rem;
+  background: #1e221e;
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.aptech-contact-dialog textarea { resize: vertical; }
+.aptech-contact-dialog__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  margin-top: .9rem;
+}
+.aptech-contact-dialog__actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #d7edcd;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+.aptech-contact-dialog__note { margin: .6rem 0 0; }
+.aptech-contact-dialog__submit { min-height: 44px; padding: 12px 18px; border: 0; border-radius: 24px; background: #baf983; color: #14200e; font: inherit; font-weight: 600; cursor: pointer; }
+.aptech-contact-dialog :is(button, input, textarea, a):focus-visible { outline: 2px solid #baf983; outline-offset: 3px; }
+.aptech-contact[data-chat-static] .solar-chat-history { overflow-y: auto; overscroll-behavior: contain; }
+
+.section.aptech-contact { min-height: 570vh; display: block; background: #000; }
+.solar-chat-stage { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; gap: 16px; width: min(1180px, 94%); margin: 0 auto; font-family: Arial, Helvetica, sans-serif; }
+.solar-chat-heading { display: flex; align-items: center; justify-content: space-between; color: #fff; }
+.solar-chat-heading h2 { margin: 0; font: inherit; font-size: 30px; letter-spacing: -.04em; }
+.solar-chat-heading button { border: 0; background: none; color: #c4c4c4; cursor: pointer; font: inherit; font-size: 13px; padding: 8px; }
+.solar-chat-app { height: min(70vh, 680px); min-height: 380px; width: 100%; overflow: hidden; border: 1px solid #ddd; border-radius: 14px; color: #171c19; background: #f8f8f8; box-shadow: 0 24px 80px #0008; }
+.solar-chat-titlebar { height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 14px; background: #f1f1f1; font-size: 12px; border-bottom: 1px solid #ddd; }
+.solar-chat-dot { width: 12px; height: 12px; background: #21b65e; border-radius: 50%; }
+.solar-chat-window-controls { margin-left: auto; letter-spacing: 4px; color: #454545; }
+.solar-chat-layout { display: grid; grid-template-columns: 50px 245px minmax(0, 1fr); height: calc(100% - 32px); }
+.solar-chat-rail { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 16px 0; border-right: 1px solid #ddd; background: #f4f5f5; font-size: 25px; }
+.solar-chat-rail-active { color: #07833e; background: #d9efdf; padding: 5px; border-radius: 8px; }
+.solar-chat-settings { margin-top: auto; }
+.solar-chat-sidebar { position: relative; padding: 20px 12px; background: #fff; border-right: 1px solid #ddd; min-width: 0; }
+.solar-chat-sidebar h3 { margin: 0 0 18px; font-size: 22px; }
+.solar-chat-search { white-space: nowrap; padding: 12px 9px; background: #f2f3f3; color: #666; font-size: 12px; border-radius: 20px; }
+.solar-chat-selected { display: flex; gap: 9px; align-items: center; margin-top: 20px; padding: 12px 6px; background: #eff3f0; border-radius: 8px; }
+.solar-chat-selected div { min-width: 0; }
+.solar-chat-selected strong { font-size: 14px; }
+.solar-chat-selected p { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 5px 0 0; }
+.solar-chat-avatar { position: relative; flex: none; width: 44px; height: 44px; overflow: hidden; border-radius: 50%; background: #000; }
+.solar-chat-avatar img { display: block; width: 100%; height: 100%; padding: 6px; object-fit: contain; box-sizing: border-box; }
+.solar-chat-demo { position: absolute; bottom: 16px; left: 18px; margin: 0; color: #777; font-size: 11px; }
+.solar-chat-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.solar-chat-header { display: flex; gap: 12px; align-items: center; min-height: 72px; padding: 10px 22px; background: #fafafa; border-bottom: 1px solid #eee; }
+.solar-chat-header h3 { margin: 0; font-size: 21px; }
+.solar-chat-header p { color: #647068; margin: 4px 0 0; font-size: 11px; }
+.solar-chat-call { margin-left: auto; color: #212c24; font-size: 29px; text-decoration: none; }
+.solar-chat-history { position: relative; flex: 1; min-height: 0; padding: 40px 24px 16px; overflow: hidden; background-color: #f1ece3; background-image: repeating-linear-gradient(32deg, transparent 0 80px, #d9d2c12b 81px 82px, transparent 83px 150px), radial-gradient(circle at 3px 3px, #c4bba342 1px, transparent 1.7px); background-size: auto, 28px 28px; }
+.solar-chat-history:focus-visible { outline: 2px solid #128c50; outline-offset: -3px; }
+.solar-chat-today { position: absolute; z-index: 2; top: 8px; left: 50%; transform: translateX(-50%); padding: 5px 12px; border-radius: 6px; background: #fffdf9; color: #666; font-size: 10px; box-shadow: 0 1px 3px #0001; }
+.solar-chat-track { display: flex; flex-direction: column; gap: 10px; will-change: transform; }
+.solar-chat-row { display: flex; justify-content: flex-start; }
+.solar-chat-row--out { justify-content: flex-end; }
+.solar-chat-bubble { max-width: 85%; padding: 10px 12px 5px; background: #fff; border-radius: 0 9px 9px 9px; box-shadow: 0 1px 2px #0002; font-size: 14px; line-height: 1.4; }
+.solar-chat-row--out .solar-chat-bubble { background: #d7f7c7; border-radius: 9px 0 9px 9px; }
+.solar-chat-bubble p { margin: 0; }
+.solar-chat-time { display: block; text-align: right; color: #68776a; font-size: 9px; line-height: 1.2; margin-top: 4px; }
+.solar-chat-time span { color: #3c9acc; font-size: 12px; letter-spacing: -3px; margin-left: 3px; }
+.solar-chat-booking strong { display: block; color: #07874c; font-size: 16px; margin-bottom: 7px; }
+.solar-chat-booking p + p { padding-top: 8px; margin-top: 8px; border-top: 1px solid #e0e6df; }
+.solar-chat-booking small { color: #7a7a7a; font-size: 10px; }
+.solar-chat-typing { align-self: flex-start; display: flex; gap: 5px; padding: 14px; background: #fff; border-radius: 0 8px 8px 8px; }
+.solar-chat-typing i { width: 5px; height: 5px; background: #9aada0; border-radius: 50%; animation: solar-chat-dots 1s infinite alternate; }
+.solar-chat-typing i:nth-child(2) { animation-delay: .15s; }
+.solar-chat-typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes solar-chat-dots { to { transform: translateY(-3px); background: #307d4f; } }
+.solar-chat-composer { display: flex; align-items: center; gap: 12px; padding: 10px 16px; min-height: 64px; border-top: 1px solid #e4e4e4; background: #fafafa; }
+.solar-chat-composer > span:first-child { font-size: 26px; color: #69756d; }
+.solar-chat-draft { display: block; flex: 1; min-width: 0; padding: 12px 16px; border: 1px solid #ddd; border-radius: 26px; background: #fff; color: #778079; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.solar-chat-draft[data-writing] { color: #242f26; }
+.solar-chat-composer button { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: #0a9853; color: #fff; cursor: pointer; }
+.solar-chat-composer svg { width: 20px; height: 20px; }
+.solar-chat-caption { display: flex; flex-direction: column; align-items: center; gap: 14px; color: #a0a0a0; font-size: 13px; }
+.solar-chat-caption p { margin: 0; }
+.solar-whatsapp-cta { position: relative; display: flex; align-items: center; box-sizing: border-box; flex: none; width: 64px; max-width: 100%; min-height: 64px; border-radius: 40px; overflow: hidden; background: #202226; color: #f5f5f7; text-decoration: none; box-shadow: inset 0 1px 1px #ffffff18, 0 8px 28px #0004; transition: width .7s cubic-bezier(.22, 1, .36, 1), background .25s, box-shadow .25s, transform .25s; }
+.solar-whatsapp-cta__label { padding: 18px 74px 18px 24px; white-space: nowrap; font-size: 20px; line-height: 1.3; font-weight: 600; letter-spacing: -.022em; opacity: 0; transform: translateX(10px); transition: opacity .3s, transform .4s; }
+.solar-whatsapp-cta__icon { position: absolute; right: 10px; top: 10px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(120deg, #a1f000, #50d500 48%, #008709); color: #081409; transition: transform .3s; }
+.solar-whatsapp-cta__icon svg { width: 27px; height: 27px; }
+.solar-whatsapp-cta.is-visible { width: 326px; }
+.solar-whatsapp-cta.is-visible .solar-whatsapp-cta__label { opacity: 1; transform: none; transition-delay: .35s; }
+.solar-whatsapp-cta:hover { background: #2b2e31; color: #fff; text-decoration: none; transform: translateY(-2px); box-shadow: inset 0 1px 1px #ffffff24, 0 8px 28px #60d50016; }
+.solar-whatsapp-cta:hover .solar-whatsapp-cta__icon { transform: rotate(-8deg) scale(1.05); }
+.solar-whatsapp-cta:active { transform: scale(.97); }
+.aptech-contact button:focus-visible, .aptech-contact a:focus-visible { outline: 2px solid #4abf77; outline-offset: 3px; }
+.solar-chat-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.solar-chat-app [hidden] { display: none !important; }
+.aptech-contact[data-chat-narrow] .solar-chat-stage { width: calc(var(--contact-width) - 28px); height: var(--contact-height); zoom: var(--contact-zoom); gap: 12px; }
+.aptech-contact[data-chat-narrow] .solar-chat-app { height: min(65vh, calc(var(--contact-height) - 160px)); min-height: 360px; }
+.aptech-contact[data-chat-narrow] .solar-chat-layout { grid-template-columns: minmax(0, 1fr); }
+.aptech-contact[data-chat-narrow] .solar-chat-sidebar, .aptech-contact[data-chat-narrow] .solar-chat-rail { display: none; }
+.aptech-contact[data-chat-narrow] .solar-chat-heading h2 { font-size: 26px; }
+.aptech-contact[data-chat-narrow] .solar-chat-history { padding-left: 12px; padding-right: 12px; }
+.aptech-contact[data-chat-narrow] .solar-chat-caption { font-size: 11px; }
+@media (prefers-reduced-motion: reduce) {
+  .section.aptech-contact { min-height: 100vh; }
+  .solar-chat-stage { position: relative; }
+  .solar-chat-typing i { animation: none; }
+  .solar-whatsapp-cta { width: 326px; transition: none; }
+  .solar-whatsapp-cta__label { opacity: 1; transform: none; transition: none; }
+  .solar-whatsapp-cta__icon { transition: none; }
+  .aptech-contact-dialog[open] { animation: none; }
+}
+@media (max-height: 620px) {
+  .solar-chat-app { height: calc(100vh - 132px); min-height: 230px; }
+  .aptech-contact[data-chat-narrow] .solar-chat-app { height: calc(var(--contact-height) - 140px); min-height: 230px; }
+}
