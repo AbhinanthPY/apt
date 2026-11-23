@@ -19,3 +19,15 @@
   document.documentElement.toggleAttribute('data-home-return', returning);
   window.aptechHomeEntry = { returning, homeHash };
 })();
+
+// Independent escape hatch if the loader script fails or a browser API throws.
+setTimeout(() => {
+  const loader = document.querySelector('.solar-loader');
+  if (!loader) return;
+  const hero = document.querySelector('.solar-hero');
+  if (hero && !hero.hasAttribute('data-frame-ready')) {
+    hero.removeAttribute('data-intro');
+  }
+  if (typeof loader.close === 'function') loader.close();
+  loader.remove();
+}, 6000);

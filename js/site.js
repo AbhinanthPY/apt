@@ -99,6 +99,7 @@ function configureScrollVideo() {
   const enabled = !reducedMotion.matches && CSS.supports('position', 'sticky') && !video.error;
   hero.toggleAttribute('data-scroll-video', enabled);
   if (!enabled) {
+    hero.removeAttribute('data-frame-ready');
     hero.removeAttribute('data-intro');
     wordmark.style.opacity = '0';
     scheduleScrollVideo();
@@ -117,6 +118,7 @@ window.addEventListener('scroll', scheduleScrollVideo, { passive: true });
 window.addEventListener('resize', scheduleScrollVideo);
 window.addEventListener('pageshow', scheduleScrollVideo);
 video.addEventListener('loadedmetadata', scheduleScrollVideo);
+video.addEventListener('canplay', configureScrollVideo);
 video.addEventListener('loadeddata', () => {
   hero.setAttribute('data-frame-ready', '');
   scheduleScrollVideo();
@@ -187,8 +189,13 @@ function prepareProductIntro() {
   if (!reducedMotion.matches) productIntro.preload = 'auto';
 }
 
-if (loader) loader.addEventListener('close', prepareProductIntro, { once: true });
-else prepareProductIntro();
+// Optional tour media should not compete with the hero on mobile connections.
+const productIntroObserver = new IntersectionObserver(([entry], observer) => {
+  if (!entry.isIntersecting) return;
+  observer.disconnect();
+  prepareProductIntro();
+}, { rootMargin: '300px 0px' });
+productIntroObserver.observe(productViewer);
 
 {
   const power = document.querySelector('.solar-power');
@@ -478,8 +485,8 @@ for (const video of productViewer.querySelectorAll('video[data-play-once]')) {
   renderEstimate();
 }
 
-// Scroll the About scenes without trapping native scrolling.
-{
+// This home page may omit the About scenes.
+if (document.querySelector('.solar-about')) {
   const about = document.querySelector('.solar-about');
   const openingScene = about.querySelector('.solar-about__opening');
   const manifesto = about.querySelector('.solar-about__manifesto');

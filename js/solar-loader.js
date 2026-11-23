@@ -1,5 +1,6 @@
 (() => {
   const loader = document.querySelector('.solar-loader');
+  if (!loader) return;
   const canvas = loader.querySelector('canvas');
   const context = canvas.getContext('2d');
   const light = loader.querySelector('.solar-loader__progress-button');
@@ -10,11 +11,7 @@
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const video = document.querySelector('.solar-hero video');
-  const videoSource = video.src;
   const poster = document.querySelector('.solar-hero-poster');
-  const wordmark = document.querySelector('.solar-wordmark image');
-  const texture = document.getElementById('solar-card-texture');
-  const loaded = new Set();
   const interaction = new AbortController();
   const { signal: interactionSignal } = interaction;
   let width = 0;
@@ -29,10 +26,12 @@
   // Use the open attribute for first paint, then move to a modal dialog for
   // keyboard focus and native inertness of the page underneath.
   loader.removeAttribute('open');
-  loader.showModal();
+  if (typeof loader.showModal === 'function') loader.showModal();
+  else loader.setAttribute('open', '');
   loader.addEventListener('cancel', event => event.preventDefault());
 
   function draw(now) {
+    frame = 0;
     if (!context) return;
     const animated = !motion.matches;
     const time = animated ? now / 1000 : 0;
@@ -143,138 +142,74 @@
     scheduleFrame();
   }
 
-  async function loadVideo(signal, onProgress) {
-    // A browser can suspend native preloading after a partial buffer.
-    // Use a local copy so the entire scroll range is available immediately.
-    const response = await fetch(videoSource, { signal, priority: 'high' });
-    if (!response.ok || response.status === 206) throw new Error('Incomplete video response');
-    const length = Number(response.headers.get('Content-Length'));
-    let file;
-    if (length > 0 && response.body) {
-      const reader = response.body.getReader();
-      const chunks = [];
-      let received = 0;
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        chunks.push(value);
-        received += value.byteLength;
-        onProgress(Math.min(received / length, 1) * .98);
+  function loadVideo(signal) {
+    // Keep the original URL: native byte-range loading avoids holding the entire
+    // MP4 in memory and works when mobile browsers limit media preloading.
+    return new Promise((resolve, reject) => {
+      function finish(error) {
+        video.removeEventListener('loadeddata', ready);
+        video.removeEventListener('error', failed);
+        signal.removeEventListener('abort', aborted);
+        if (error) reject(error);
+        else resolve();
       }
-      file = new Blob(chunks, { type: 'video/mp4' });
-    } else {
-      file = await response.blob();
-    }
-    signal.throwIfAborted();
-    if (!file.size) throw new Error('Empty video response');
-
-    const url = URL.createObjectURL(file);
-    try {
-      await new Promise((resolve, reject) => {
-        const events = new AbortController();
-        function finish(error) {
-          events.abort();
-          if (error) reject(error);
-          else resolve();
-        }
-        video.addEventListener('loadeddata', () => finish(), { signal: events.signal });
-        video.addEventListener('error', () => finish(video.error), { signal: events.signal });
-        signal.addEventListener('abort', () => finish(signal.reason), { signal: events.signal });
-        video.src = url;
-        video.preload = 'auto';
-      });
-    } catch (error) {
-      video.preload = 'none';
-      video.removeAttribute('src');
+      const ready = () => finish();
+      const failed = () => finish(video.error || new Error('Video unavailable'));
+      const aborted = () => finish(new Error('Video still buffering'));
+      video.addEventListener('loadeddata', ready);
+      video.addEventListener('error', failed);
+      signal.addEventListener('abort', aborted, { once: true });
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'auto';
       video.load();
-      URL.revokeObjectURL(url);
-      throw error;
-    }
-  }
-
-  function loadImage(source) {
-    const image = new Image();
-    image.src = source;
-    return image.decode();
+      if (video.readyState >= 2) ready();
+    });
   }
 
   async function prepareSite() {
     const controller = new AbortController();
-    const { signal } = controller;
     const animated = !motion.matches && CSS.supports('position', 'sticky');
-    let videoProgress = 0;
-    const imageCount = animated ? 3 : 2;
-    function updateProgress() {
-      const imagesLoaded = loaded.size - Number(loaded.has(video));
-      const fraction = imagesLoaded / imageCount;
-      showProgress(Math.floor((animated ? .1 * fraction + .9 * videoProgress : fraction) * 100));
-    }
-    const tasks = [
-      [poster, () => poster.decode()],
-      [texture, () => loadImage(texture.href)],
-    ];
-    if (animated) {
-      videoProgress = Number(loaded.has(video));
-      tasks.push([wordmark, () => loadImage(wordmark.href.baseVal)], [video, () => loadVideo(signal, fraction => {
-        videoProgress = fraction;
-        updateProgress();
-      })]);
-    }
-
+    const tasks = [() => poster.decode()];
+    if (animated) tasks.push(() => loadVideo(controller.signal));
+    let completed = 0;
+    let deadline;
     retry.hidden = true;
     status.textContent = 'Loading Aptech Solar';
-    updateProgress();
-    const slow = setTimeout(() => {
-      status.textContent = 'Still loading Aptech Solar';
-    }, 8000);
-    const deadline = setTimeout(() => controller.abort(), 45000);
-    const interrupted = new Promise((_, reject) => {
-      signal.addEventListener('abort', () => reject(signal.reason), { once: true });
-    });
-
+    showProgress(0);
     try {
+      // Only the first frame is useful for entry. Neither a slow video, a
+      // missing image, nor iOS withholding loadeddata may trap the visitor.
       await Promise.race([
-        interrupted,
-        Promise.all(tasks.map(async ([asset, load]) => {
-          if (loaded.has(asset)) return;
-          await load();
-          signal.throwIfAborted();
-          loaded.add(asset);
-          if (asset === video) videoProgress = 1;
-          updateProgress();
+        Promise.allSettled(tasks.map(async load => {
+          try { await load(); }
+          finally { showProgress(Math.round(++completed / tasks.length * 100)); }
         })),
+        new Promise(resolve => { deadline = setTimeout(resolve, 3500); }),
       ]);
-    } catch {
-      controller.abort();
-      status.textContent = 'Loading was interrupted.';
-      retry.hidden = false;
-      return;
     } finally {
-      clearTimeout(slow);
       clearTimeout(deadline);
+      controller.abort();
     }
 
-    await window.aptechHomeEntry?.prepare?.();
+    try { await window.aptechHomeEntry?.prepare?.(); } catch {}
+    showProgress(100);
     status.textContent = 'Ready';
     if (!motion.matches && context) {
       await new Promise(resolve => {
-        finishReveal = resolve;
+        // Also finish if requestAnimationFrame is suspended in a mobile tab.
+        const deadline = setTimeout(resolve, 700);
+        finishReveal = () => { clearTimeout(deadline); resolve(); };
         revealStarted = performance.now();
         loader.setAttribute('data-revealing', '');
         scheduleFrame();
       });
-    } else if (!motion.matches) {
-      await loader.animate([{ opacity: 1 }, { opacity: 0 }], {
-        duration: 180,
-        easing: 'ease-out',
-        fill: 'forwards',
-      }).finished;
     }
     cancelAnimationFrame(frame);
     interaction.abort();
-    // Let the close event run before removing the dialog.
-    loader.addEventListener('close', () => loader.remove(), { once: true });
-    loader.close();
+    // Closing releases native modal focus/inertness and notifies site.js.
+    if (typeof loader.close === 'function') loader.close();
+    loader.remove();
   }
 
   retry.addEventListener('click', prepareSite);

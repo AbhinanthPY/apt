@@ -1886,3 +1886,9 @@ html.chip-hero-enhanced .section-performance .subsection-mx-hero .section-mx-scr
 @media (max-width:600px) { .solar-mobile-menu .solar-mobile-book { background: #252e20; color: #d8f5be; margin-top: 4px; } }
 
 html[data-home-return] .solar-hero-title { transition: none; }
+
+/* Keep the poster and headline useful while mobile browsers buffer the video. */
+.solar-hero[data-intro]:not([data-frame-ready]) .solar-hero-title {
+  opacity: 1;
+  transform: none;
+}
