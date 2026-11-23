@@ -1,0 +1,68 @@
+.portal-section {
+  position: relative;
+  min-height: 100svh;
+  isolation: isolate;
+  background: #000;
+  scroll-margin-top: 0;
+}
+.portal-section__viewport {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  overflow: clip;
+}
+.portal-section__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #000;
+  transform-origin: top left;
+}
+body[data-portal-active]:not([data-portal-assembly-nav]) .solar-header {
+  visibility: hidden;
+}
+
+body[data-portal-assembly-nav] .solar-header {
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body[data-portal-assembly-nav] .solar-header[data-nav-visible] .solar-nav {
+    animation: solar-assembly-nav-enter 680ms cubic-bezier(.18, .8, .26, 1) both;
+  }
+
+  body[data-portal-assembly-nav] .solar-nav::before {
+    animation: solar-assembly-nav-glint 900ms ease-out 180ms both;
+  }
+}
+
+body[data-portal-assembly-nav] .solar-nav {
+  position: relative;
+  overflow: hidden;
+}
+
+body[data-portal-assembly-nav] .solar-nav::before {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 25%, rgb(255 255 255 / 36%) 48%, transparent 68%);
+  background-size: 220% 100%;
+  pointer-events: none;
+  content: "";
+}
+
+@keyframes solar-assembly-nav-enter {
+  0% { opacity: 0; transform: translateY(-24px) scale(.82); filter: blur(12px); }
+  62% { opacity: 1; transform: translateY(3px) scale(1.035); filter: blur(0); }
+  82% { transform: translateY(-2px) scale(.992); }
+  100% { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@keyframes solar-assembly-nav-glint {
+  0% { background-position: 160% 0; opacity: 0; }
+  24% { opacity: 1; }
+  100% { background-position: -90% 0; opacity: 0; }
+}
