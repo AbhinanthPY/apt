@@ -1,0 +1,9 @@
+{
+  "name": "aptech-solar-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && for f in js/*.js assets/portal/*.js; do node --check \"$f\" || exit 1; done"
+  }
+}
